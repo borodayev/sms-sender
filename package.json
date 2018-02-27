@@ -1,0 +1,46 @@
+{
+  "name": "smsc-js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^5.0.4",
+    "node-fetch": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.1",
+    "babel-jest": "22.1.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-plugin-transform-object-rest-spread": "^6.13.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-flowtype": "^2.42.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "fetch-mock": "^6.0.0",
+    "flow-bin": "^0.64.0",
+    "jest": "22.1.4",
+    "mongodb-memory-server": "^1.6.5",
+    "prettier": "^1.10.2",
+    "nodemon": "^1.15.1",
+    "rimraf": "^2.6.2"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ]
+  },
+  "scripts": {
+    "start": "./node_modules/.bin/babel-node ./src/index.js",
+    "start-watch": "nodemon ./src/index.js --exec babel-node",
+    "watch": "jest --watch",
+    "lint": "eslint --ext .js ./src",
+    "flow": "./node_modules/.bin/flow",
+    "test": "jest && npm run lint && npm run flow"
+  }
+}
