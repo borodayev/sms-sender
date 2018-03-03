@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "^5.0.4",
-    "node-fetch": "^2.0.0"
+    "isomorphic-fetch": "^2.2.1",
+    "mongoose": "^5.0.4"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -26,8 +26,8 @@
     "flow-bin": "^0.64.0",
     "jest": "22.1.4",
     "mongodb-memory-server": "^1.6.5",
-    "prettier": "^1.10.2",
     "nodemon": "^1.15.1",
+    "prettier": "^1.10.2",
     "rimraf": "^2.6.2"
   },
   "jest": {
