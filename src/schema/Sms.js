@@ -22,11 +22,23 @@ export const SmsSchema = new mongoose.Schema(
 
     sender: {
       type: String,
+      default: 'SALON.KZ',
       description: 'Имя отправителя',
     },
 
+    balance: {
+      type: Number,
+      description: 'Текущий баланс после отправки сообщения',
+    },
+
+    cost: {
+      type: Number,
+      description: 'Стоимость текущей рассылки',
+    },
+
     status: {
-      type: String,
+      type: Number,
+      description: 'Статус сообщения',
     },
   },
   {
@@ -39,8 +51,10 @@ export const SmsSchema = new mongoose.Schema(
 export class SmsDoc /* :: extends Mongoose$Document */ {
   // $FlowFixMe
   id: number;
+  message: string;
+  phones: Array<string>;
   sender: string;
-  error: string;
+  status: number;
 
   static async upsert(data: $Shape<SmsDoc>): Promise<?SmsDoc> {
     return this.findOneAndUpdate(
