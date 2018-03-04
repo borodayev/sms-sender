@@ -1,9 +1,10 @@
 // @flow
+/* eslint-disable no-param-reassign */
 
 import 'isomorphic-fetch';
-import { Sms } from './schema/Sms';
+import { preparePhones, writeToDB } from './utils';
 
-export type phonesType = string | Array<string>;
+export type PhonesType = string | Array<string>;
 // export type sendOpts = {
 //   sender: string,
 //   tinyurl: 0 | 1,
@@ -23,45 +24,43 @@ export default class Smsc {
     this.credentials = credentials;
   }
 
-  async sendSms(phones: phonesType, message: string /* options?: sendOpts */): Promise<any> {
+  async sendSms(phones: PhonesType, message: string /* options?: sendOpts */): Promise<any> {
     const { password, login } = this.credentials || {};
-    if (Array.isArray(phones)) {
-      phones = phones.join(','); // eslint-disable-line no-param-reassign
-    }
+    phones = preparePhones(phones);
     const res = await fetch(
-      `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3`
+      `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=3`
     );
 
     const resJSON = await res.json();
-    await Smsc.writeToDB(resJSON, message, phones);
-
+    await writeToDB(resJSON, message, phones);
     return resJSON;
   }
 
-  async getStatus(id: number, phone: phonesType): Promise<any> {
+  async getCost(phones: PhonesType, message: string): Promise<any> {
     const { password, login } = this.credentials || {};
-    if (Array.isArray(phone)) {
-      phone = phone.join(','); // eslint-disable-line no-param-reassign
-    }
+    phones = preparePhones(phones);
     const res = await fetch(
-      `http://smsc.ru/sys/status.php?login=${login}&psw=${password}&phone=${phone}&id=${id}&fmt=3`
+      `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=1`
     );
     const resJSON = await res.json();
+    return resJSON;
+  }
 
+  async getStatus(id: number, phones: PhonesType): Promise<any> {
+    const { password, login } = this.credentials || {};
+    phones = preparePhones(phones);
+    const res = await fetch(
+      `http://smsc.ru/sys/status.php?login=${login}&psw=${password}&phone=${phones}&id=${id}&fmt=3`
+    );
+
+    const resJSON = await res.json();
     return resJSON;
   }
 
   async getBalance(): Promise<any> {
     const { password, login } = this.credentials || {};
-    const res = await fetch(`http://smsc.ru/sys/balance.php?login=${login}&psw=${password}fmt=3`);
+    const res = await fetch(`http://smsc.ru/sys/balance.php?login=${login}&psw=${password}&fmt=3`);
     const resJSON = await res.json();
-
     return resJSON;
-  }
-
-  static async writeToDB(res: any, message: string, phones: phonesType): Promise<any> {
-    const { id, error, error_code: errorCode } = res || {};
-    if (error && errorCode) throw new Error(`Cannot send sms: ${error}, error_code: ${errorCode}`);
-    await Sms.upsert({ id, message, phones });
   }
 }
