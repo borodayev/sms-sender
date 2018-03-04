@@ -12,55 +12,99 @@ export type PhonesType = string | Array<string>;
 //   tz: number,
 //   flash: 0 | 1,
 // };
-export type credentialsType = {
+export type CredentialsType = {
   login: string,
   password: string,
 };
 
-export default class Smsc {
-  credentials: credentialsType;
+export type SendSmsOutputType = {
+  balance: number,
+  cnt: number,
+  cost: number,
+  id: number,
+};
 
-  constructor(credentials: credentialsType) {
+export type GetCostOutputType = {
+  cnt: number,
+  cost: number,
+};
+
+export type GetStatusOutputType = {
+  last_date: string,
+  last_timestamp: number,
+  status: number,
+};
+
+export type GetBalanceOutputType = {
+  balance: number,
+};
+
+export default class Smsc {
+  credentials: CredentialsType;
+
+  constructor(credentials: CredentialsType) {
     this.credentials = credentials;
   }
 
-  async sendSms(phones: PhonesType, message: string /* options?: sendOpts */): Promise<any> {
+  async sendSms(
+    phones: PhonesType,
+    message: string /* options?: sendOpts */
+  ): Promise<SendSmsOutputType> {
     const { password, login } = this.credentials || {};
     phones = preparePhones(phones);
-    const res = await fetch(
-      `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=3`
-    );
+    try {
+      const res = await fetch(
+        `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=3`
+      );
 
-    const resJSON = await res.json();
-    await writeToDB(resJSON, message, phones);
-    return resJSON;
+      const resJSON = await res.json();
+      await writeToDB(resJSON, message, phones);
+
+      return resJSON;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  async getCost(phones: PhonesType, message: string): Promise<any> {
+  async getCost(phones: PhonesType, message: string): Promise<GetCostOutputType> {
     const { password, login } = this.credentials || {};
     phones = preparePhones(phones);
-    const res = await fetch(
-      `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=1`
-    );
-    const resJSON = await res.json();
-    return resJSON;
+    try {
+      const res = await fetch(
+        `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=1`
+      );
+      const resJSON = await res.json();
+      return resJSON;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  async getStatus(id: number, phones: PhonesType): Promise<any> {
+  async getStatus(id: number, phones: PhonesType): Promise<GetStatusOutputType> {
     const { password, login } = this.credentials || {};
     phones = preparePhones(phones);
-    const res = await fetch(
-      `http://smsc.ru/sys/status.php?login=${login}&psw=${password}&phone=${phones}&id=${id}&fmt=3`
-    );
+    try {
+      const res = await fetch(
+        `http://smsc.ru/sys/status.php?login=${login}&psw=${password}&phone=${phones}&id=${id}&fmt=3`
+      );
 
-    const resJSON = await res.json();
-    return resJSON;
+      const resJSON = await res.json();
+      return resJSON;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 
-  async getBalance(): Promise<any> {
+  async getBalance(): Promise<GetBalanceOutputType> {
     const { password, login } = this.credentials || {};
-    const res = await fetch(`http://smsc.ru/sys/balance.php?login=${login}&psw=${password}&fmt=3`);
-    const resJSON = await res.json();
-    return resJSON;
+    try {
+      const res = await fetch(
+        `http://smsc.ru/sys/balance.php?login=${login}&psw=${password}&fmt=3`
+      );
+      const resJSON = await res.json();
+      return resJSON;
+    } catch (e) {
+      throw new Error(e);
+    }
   }
 }
