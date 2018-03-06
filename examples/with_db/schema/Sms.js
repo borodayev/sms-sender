@@ -5,9 +5,14 @@ import DB from './db';
 
 export const SmsSchema = new mongoose.Schema(
   {
-    id: {
+    transporter: {
+      type: String,
+      description: 'Provider who send sms',
+    },
+
+    messageId: {
       type: Number,
-      description: 'ID sms на сервере SMSC',
+      description: 'Message ID given by transporter',
     },
 
     message: {
@@ -26,18 +31,13 @@ export const SmsSchema = new mongoose.Schema(
       description: 'Имя отправителя',
     },
 
-    balance: {
-      type: Number,
-      description: 'Текущий баланс после отправки сообщения',
-    },
-
     cost: {
       type: Number,
       description: 'Стоимость текущей рассылки',
     },
 
     status: {
-      type: Number,
+      type: Number, // TODO ENUM
       description: 'Статус сообщения',
     },
   },
@@ -50,18 +50,19 @@ export const SmsSchema = new mongoose.Schema(
 
 export class SmsDoc /* :: extends Mongoose$Document */ {
   // $FlowFixMe
-  id: number;
-  message: string;
-  phones: Array<string>;
-  sender: string;
-  status: number;
 
-  static async upsert(data: $Shape<SmsDoc>): Promise<?SmsDoc> {
-    return this.findOneAndUpdate(
+  // TODO
+  // message: string;
+  // phones: Array<string>;
+  // sender: string;
+  // status: number;
+
+  static async upsert(data: $Shape<SmsDoc>): Promise<SmsDoc> {
+    return (this.findOneAndUpdate(
       { id: data.id },
       { ...data },
       { new: true, upsert: true, setDefaultsOnInsert: true }
-    ).exec();
+    ).exec(): any);
   }
 }
 

@@ -12,61 +12,73 @@ export type PhonesType = string | Array<string>;
 //   tz: number,
 //   flash: 0 | 1,
 // };
-export type CredentialsType = {
+export type CredentialsT = {
   login: string,
   password: string,
 };
 
-export type SendSmsOutputType = {
-  balance: number,
-  cnt: number,
-  cost: number,
-  id: number,
+export type SendSmsOutputT = {
+  cnt: number, // number of sms messages
+  id: number, // message id
+  cost: number, // sms cost
+  balance: number, // account balance after message sending
 };
 
-export type GetCostOutputType = {
+// TODO tinyurl - 0, 1
+// TODO translit
+// TODO charset=utf-8
+
+export type GetCostOutputT = {
   cnt: number,
   cost: number,
 };
 
-export type GetStatusOutputType = {
+export type GetStatusOutputT = {
   last_date: string,
   last_timestamp: number,
   status: number,
 };
 
-export type GetBalanceOutputType = {
+export type GetBalanceOutputT = {
   balance: number,
 };
 
 export default class Smsc {
-  credentials: CredentialsType;
+  credentials: CredentialsT;
 
-  constructor(credentials: CredentialsType) {
+  constructor(credentials: CredentialsT) {
     this.credentials = credentials;
   }
 
-  async sendSms(
-    phones: PhonesType,
-    message: string /* options?: sendOpts */
-  ): Promise<SendSmsOutputType> {
-    const { password, login } = this.credentials || {};
-    phones = preparePhones(phones);
-    try {
-      const res = await fetch(
-        `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=3`
-      );
-
-      const resJSON = await res.json();
-      await writeToDB(resJSON, message, phones);
-
-      return resJSON;
-    } catch (e) {
-      throw new Error(e);
-    }
+  async _send(params: Object): Promise<Object> {
+    // TODO combine url via https://nodejs.org/api/url.html
+    const res = await fetch(
+      `http://smsc.ru/sys/send.php?login=${this.credentials.login}&psw=${this.credentials.password}&phones=${phones}&mes=${message}&fmt=3&cost=1`
+    );
+    return res.json();
   }
 
-  async getCost(phones: PhonesType, message: string): Promise<GetCostOutputType> {
+  async sendSms(
+    phones: PhonesType, // TODO string (one phone number)
+    message: string /* options?: sendOpts */
+  ): Promise<SendSmsOutputT> {
+    const formatedPhones = preparePhones(phones);
+    const res = this._send({
+      phones: formatedPhones,
+      mes: message,
+      fmt: 3,
+      cost: 3,
+      ...sendOpts,
+    });
+
+    await writeToDB(res, message, phones);
+
+    return resJSON;
+  }
+
+  // cost: number
+  // response: mixed, // vanila response from transporter
+  async getCost(phones: PhonesType, message: string): Promise<GetCostOutputT> {
     const { password, login } = this.credentials || {};
     phones = preparePhones(phones);
     try {
@@ -80,7 +92,7 @@ export default class Smsc {
     }
   }
 
-  async getStatus(id: number, phones: PhonesType): Promise<GetStatusOutputType> {
+  async getStatus(id: number, phones: PhonesType): Promise<GetStatusOutputT> {
     const { password, login } = this.credentials || {};
     phones = preparePhones(phones);
     try {
@@ -95,7 +107,7 @@ export default class Smsc {
     }
   }
 
-  async getBalance(): Promise<GetBalanceOutputType> {
+  async getBalance(): Promise<GetBalanceOutputT> {
     const { password, login } = this.credentials || {};
     try {
       const res = await fetch(
