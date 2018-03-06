@@ -28,19 +28,10 @@ export type SendSmsOutputT = {
 // TODO translit
 // TODO charset=utf-8
 
-export type GetCostOutputT = {
-  cnt: number,
-  cost: number,
-};
-
 export type GetStatusOutputT = {
   last_date: string,
   last_timestamp: number,
   status: number,
-};
-
-export type GetBalanceOutputT = {
-  balance: number,
 };
 
 export default class Smsc {
@@ -78,7 +69,8 @@ export default class Smsc {
 
   // cost: number
   // response: mixed, // vanila response from transporter
-  async getCost(phones: PhonesType, message: string): Promise<GetCostOutputT> {
+  async getCost(phone: PhonesType, message: string): Promise<number> {
+    // TODO: return only cost
     const { password, login } = this.credentials || {};
     phones = preparePhones(phones);
     try {
@@ -92,12 +84,15 @@ export default class Smsc {
     }
   }
 
-  async getStatus(id: number, phones: PhonesType): Promise<GetStatusOutputT> {
+  async getStatus(messageId: number): Promise<GetStatusOutputT> {
     const { password, login } = this.credentials || {};
+
+    // TODO 30-77718637484 split messageId and phone number
+
     phones = preparePhones(phones);
     try {
       const res = await fetch(
-        `http://smsc.ru/sys/status.php?login=${login}&psw=${password}&phone=${phones}&id=${id}&fmt=3`
+        `http://smsc.ru/sys/status.php?login=${login}&psw=${password}&phone=${phones}&id=${messageId}&fmt=3`
       );
 
       const resJSON = await res.json();
@@ -107,7 +102,7 @@ export default class Smsc {
     }
   }
 
-  async getBalance(): Promise<GetBalanceOutputT> {
+  async getBalance(): Promise<number> {
     const { password, login } = this.credentials || {};
     try {
       const res = await fetch(
