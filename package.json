@@ -36,8 +36,7 @@
     ]
   },
   "scripts": {
-    "start": "./node_modules/.bin/babel-node ./src/index.js",
-    "start-watch": "nodemon ./src/index.js --exec babel-node",
+    "demo": "./node_modules/.bin/babel-node ./examples/test_run.js",
     "watch": "jest --watch",
     "lint": "eslint --ext .js ./src",
     "flow": "./node_modules/.bin/flow",
