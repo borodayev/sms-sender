@@ -3,7 +3,13 @@
 import 'isomorphic-fetch';
 import { URLSearchParams } from 'url';
 
-import { type CredentialsT, type SendSmsResponseT, type SendSmsParamsT } from '../definitions';
+import {
+  type CredentialsT,
+  type SendSmsParamsT,
+  type SendSmsResponseT,
+  type GetCostParamsT,
+  type GetCostResponseT,
+} from '../definitions';
 
 export default class Smsc {
   credentials: CredentialsT;
@@ -24,7 +30,7 @@ export default class Smsc {
     return res.json();
   }
 
-  async sendSms(params: $Shape<SendSmsParamsT>): Promise<SendSmsResponseT> {
+  async sendSms(params: SendSmsParamsT): Promise<SendSmsResponseT> {
     const uri = `http://smsc.ru/sys/send.php`;
     const rawData = await this._send(uri, params);
     const res = {
@@ -34,22 +40,17 @@ export default class Smsc {
     return res;
   }
 
-  // // cost: number
-  // // response: mixed, // vanila response from transporter
-  // async getCost(phone: PhonesType, message: string): Promise<number> {
-  //   // TODO: return only cost
-  //   const { password, login } = this.credentials || {};
-  //   phones = preparePhones(phones);
-  //   try {
-  //     const res = await fetch(
-  //       `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=1`
-  //     );
-  //     const resJSON = await res.json();
-  //     return resJSON;
-  //   } catch (e) {
-  //     throw new Error(e);
-  //   }
-  // }
+  async getCost(params: GetCostParamsT): Promise<GetCostResponseT> {
+    const uri = `http://smsc.ru/sys/send.php`;
+    const costParams = params;
+    costParams.cost = 1;
+    const rawData = await this._send(uri, params);
+    const res = {
+      cost: rawData.cost,
+      response: rawData,
+    };
+    return res;
+  }
   //
   // async getStatus(messageId: number): Promise<GetStatusOutputT> {
   //   const { password, login } = this.credentials || {};
