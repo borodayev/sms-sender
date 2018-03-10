@@ -26,17 +26,15 @@ describe('Smsc', () => {
     });
   });
 
-  // it('getCost', async () => {
-  //   const phones = '+77718637484';
-  //   const message = 'hello';
-  //   fetchMock.mock({
-  //     matcher: `http://smsc.ru/sys/send.php?login=${login}&psw=${password}&phones=${phones}&mes=${message}&fmt=3&cost=1`,
-  //     response: { cnt: 1, cost: '0' },
-  //   });
-  //
-  //   const res = await smsc.getCost(phones, message);
-  //   expect(res).toEqual({ cnt: 1, cost: '0' });
-  // });
+  it('getCost', async () => {
+    fetchMock.mock({
+      matcher: `http://smsc.ru/sys/send.php?phones=77718637484&mes=hello&fmt=3&cost=1&login=test_dev_kz&psw=test_dev_kz`,
+      response: { cnt: 1, cost: '0' },
+    });
+
+    const res = await smsc.getCost({ phones: '77718637484', mes: 'hello', fmt: 3 });
+    expect(res).toEqual({ cost: '0', response: { cnt: 1, cost: '0' } });
+  });
   //
   // it('getStatus', async () => {
   //   const phone = '+77718637484';
