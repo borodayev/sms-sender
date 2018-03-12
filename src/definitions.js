@@ -1,17 +1,17 @@
-/* @flow */
+// @flow
 
 export type SendSmsParamsT = {|
   phones: string,
-  cost?: 0 | 1 | 2 | 3,
+  cost?: 1 | 2 | 3,
   mes: string,
-  fmt?: 0 | 1 | 2 | 3,
+  fmt?: 1 | 2 | 3,
   sender?: string,
-  tinyurl?: 0 | 1,
+  tinyurl?: 1,
   time?: Date,
   tz?: number,
-  flash?: 0 | 1,
+  flash?: 1,
   charset?: 'utf-8',
-  translit?: 0 | 1 | 2,
+  translit?: 1 | 2,
 |};
 
 export type SendSmsResponseT = {|
@@ -24,7 +24,7 @@ export type SendSmsResponseT = {|
 export type GetCostParamsT = {|
   phones: string,
   mes: string,
-  fmt?: 0 | 1 | 2 | 3,
+  fmt?: 1 | 2 | 3,
 |};
 
 export type GetCostResponseT = {|
@@ -32,13 +32,17 @@ export type GetCostResponseT = {|
   response: mixed, // vanila response from transporter
 |};
 
+export type GetStatusResponseT = {|
+  status: string,
+  response: mixed, // vanila response from transporter
+|};
+
+export type GetBalanceParamsT = {|
+  cur?: boolean,
+  fmt?: 1 | 2 | 3,
+|};
+
 export type CredentialsT = {|
   login: string,
   password: string,
 |};
-
-export type GetStatusOutputT = {
-  last_date: string,
-  last_timestamp: number,
-  status: number,
-};
