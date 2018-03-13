@@ -16,9 +16,15 @@ export type SendSmsParamsT = {|
 
 export type SendSmsResponseT = {|
   messageId: string,
-  cost?: number,
-  status?: 'ok' | 'error' | 'pending',
   response: mixed, // vanila response from transporter
+|};
+
+export type DeleteSmsParamsT = {|
+  fmt?: 1 | 2 | 3,
+|};
+
+export type DeleteSmsResponseT = {|
+  result: string,
 |};
 
 export type GetCostParamsT = {|
@@ -32,13 +38,19 @@ export type GetCostResponseT = {|
   response: mixed, // vanila response from transporter
 |};
 
+export type GetStatusParamsT = {|
+  fmt?: 1 | 2 | 3,
+  all?: 1 | 2,
+  charset?: 'utf-8',
+|};
+
 export type GetStatusResponseT = {|
-  status: string,
+  status: number,
   response: mixed, // vanila response from transporter
 |};
 
 export type GetBalanceParamsT = {|
-  cur?: boolean,
+  cur?: 1,
   fmt?: 1 | 2 | 3,
 |};
 

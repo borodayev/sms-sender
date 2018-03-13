@@ -7,8 +7,11 @@ import {
   type CredentialsT,
   type SendSmsParamsT,
   type SendSmsResponseT,
+  type DeleteSmsParamsT,
+  type DeleteSmsResponseT,
   type GetCostParamsT,
   type GetCostResponseT,
+  type GetStatusParamsT,
   type GetStatusResponseT,
   type GetBalanceParamsT,
 } from '../definitions';
@@ -20,19 +23,21 @@ export default class Smsc {
     this.credentials = credentials;
   }
 
+  // make request to SMSC API
   async _send(uri: string, params: Object): Promise<Object> {
     const { login, password } = this.credentials || {};
-    const authParams = {
+    const extendedParams = {
       login,
       psw: password,
       ...params,
     };
-    const paramsUrl = new URLSearchParams(authParams);
+    const paramsUrl = new URLSearchParams(extendedParams);
     const url = `${uri}?${paramsUrl.toString()}`;
     const res = await fetch(url);
     return res.json();
   }
 
+  // send message
   async sendSms(params: SendSmsParamsT): Promise<SendSmsResponseT> {
     const uri = `http://smsc.ru/sys/send.php`;
     const rawData = await this._send(uri, params);
@@ -43,13 +48,28 @@ export default class Smsc {
     return res;
   }
 
+  // delete already sended message (messageId format: id-phoneNumber)
+  async deleteSms(messageId: string, params: DeleteSmsParamsT): Promise<DeleteSmsResponseT> {
+    const extendedParams = {
+      id: messageId.split('-')[0],
+      phone: messageId.split('-')[1],
+      del: 1,
+      ...params,
+    };
+
+    const uri = `http://smsc.ru/sys/status.php`;
+    const res = await this._send(uri, extendedParams);
+    return res;
+  }
+
+  // get cost of message without sending
   async getCost(params: GetCostParamsT): Promise<GetCostResponseT> {
     const uri = `http://smsc.ru/sys/send.php`;
-    const costParams = {
+    const extendedParams = {
       cost: 1,
       ...params,
     };
-    const rawData = await this._send(uri, costParams);
+    const rawData = await this._send(uri, extendedParams);
     const res = {
       cost: rawData.cost,
       response: rawData,
@@ -57,15 +77,16 @@ export default class Smsc {
     return res;
   }
 
-  async getStatus(messageId: string): Promise<GetStatusResponseT> {
-    const params = {
+  // get status of message (messageId format: id-phoneNumber)
+  async getStatus(messageId: string, params: GetStatusParamsT): Promise<GetStatusResponseT> {
+    const extendedParams = {
       id: messageId.split('-')[0],
       phone: messageId.split('-')[1],
-      fmt: 3,
+      ...params,
     };
 
     const uri = `http://smsc.ru/sys/status.php`;
-    const rawData = await this._send(uri, params);
+    const rawData = await this._send(uri, extendedParams);
     const res = {
       status: rawData.status,
       response: rawData,
@@ -92,9 +113,10 @@ export default class Smsc {
     // });
   }
 
+  // get current balance
   async getBalance(params: GetBalanceParamsT): Promise<{ balance: number }> {
     const uri = `http://smsc.ru/sys/balance.php`;
-    const rawData = await this._send(uri, params);
-    return rawData;
+    const res = await this._send(uri, params);
+    return res;
   }
 }
