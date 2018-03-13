@@ -36,7 +36,7 @@
     ]
   },
   "scripts": {
-    "demo": "./node_modules/.bin/babel-node ./examples/test_run.js",
+    "ex-with-db": "./node_modules/.bin/babel-node ./examples/with_db/index.js",
     "watch": "jest --watch",
     "lint": "eslint --ext .js ./src",
     "flow": "./node_modules/.bin/flow",

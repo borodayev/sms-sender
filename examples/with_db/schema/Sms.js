@@ -11,34 +11,28 @@ export const SmsSchema = new mongoose.Schema(
     },
 
     messageId: {
-      type: Number,
+      type: String,
       description: 'Message ID given by transporter',
     },
 
     message: {
       type: String,
-      description: 'Текст сообщения',
+      description: 'Text of message',
     },
 
-    phones: {
-      type: [String],
-      description: 'Номера получателей',
-    },
-
-    sender: {
+    phone: {
       type: String,
-      default: 'SALON.KZ',
-      description: 'Имя отправителя',
-    },
-
-    cost: {
-      type: Number,
-      description: 'Стоимость текущей рассылки',
+      description: 'Phone of recepient',
     },
 
     status: {
       type: Number, // TODO ENUM
-      description: 'Статус сообщения',
+      description: 'Status of message',
+    },
+
+    rawData: {
+      type: mongoose.Schema.Types.Mixed,
+      descriprion: 'Raw response from api',
     },
   },
   {
@@ -49,17 +43,16 @@ export const SmsSchema = new mongoose.Schema(
 );
 
 export class SmsDoc /* :: extends Mongoose$Document */ {
-  // $FlowFixMe
-
-  // TODO
-  // message: string;
-  // phones: Array<string>;
-  // sender: string;
-  // status: number;
+  transporter: string;
+  messageId: string;
+  message: string;
+  phone: string;
+  status: number;
+  rawData: mixed;
 
   static async upsert(data: $Shape<SmsDoc>): Promise<SmsDoc> {
     return (this.findOneAndUpdate(
-      { id: data.id },
+      { messageId: data.messageId },
       { ...data },
       { new: true, upsert: true, setDefaultsOnInsert: true }
     ).exec(): any);

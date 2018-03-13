@@ -3,21 +3,27 @@
 import 'isomorphic-fetch';
 import { URLSearchParams } from 'url';
 
-import {
-  type CredentialsT,
-  type SendSmsParamsT,
-  type SendSmsResponseT,
-  type DeleteSmsParamsT,
-  type DeleteSmsResponseT,
-  type GetCostParamsT,
-  type GetCostResponseT,
-  type GetStatusParamsT,
-  type GetStatusResponseT,
-  type GetBalanceParamsT,
+import type {
+  SendSmsResponseT,
+  GetCostResponseT,
+  GetStatusResponseT,
+  GetBalanceResponseT,
+  SmsStatusT,
+  TransporterI,
 } from '../definitions';
 
-export default class Smsc {
+type CredentialsT = {|
+  login: string,
+  password: string,
+|};
+
+export default class Smsc implements TransporterI {
   credentials: CredentialsT;
+  commonSmsParams = {
+    tinyurl: 1,
+    charset: 'utf-8',
+    translit: 1,
+  };
 
   constructor(credentials: CredentialsT) {
     this.credentials = credentials;
@@ -30,6 +36,7 @@ export default class Smsc {
       login,
       psw: password,
       ...params,
+      fmt: 3, // return response in JSON format
     };
     const paramsUrl = new URLSearchParams(extendedParams);
     const url = `${uri}?${paramsUrl.toString()}`;
@@ -37,86 +44,78 @@ export default class Smsc {
     return res.json();
   }
 
-  // send message
-  async sendSms(params: SendSmsParamsT): Promise<SendSmsResponseT> {
-    const uri = `http://smsc.ru/sys/send.php`;
-    const rawData = await this._send(uri, params);
-    const res = {
-      messageId: `${rawData.id}-${params.phones}`,
-      response: rawData,
-    };
-    return res;
+  // eslint-disable-next-line class-methods-use-this
+  _prepareStatus(status: number): SmsStatusT {
+    if (status === 1 || status === 2) {
+      return 'ok';
+    } else if (status === -1 || status === 0) {
+      return 'pending';
+    }
+    return 'error';
   }
-
-  // delete already sended message (messageId format: id-phoneNumber)
-  async deleteSms(messageId: string, params: DeleteSmsParamsT): Promise<DeleteSmsResponseT> {
+  // send message
+  async sendSms(phone: string, message: string): Promise<SendSmsResponseT> {
+    const uri = `http://smsc.ru/sys/send.php`;
     const extendedParams = {
-      id: messageId.split('-')[0],
-      phone: messageId.split('-')[1],
-      del: 1,
-      ...params,
+      phones: phone,
+      mes: message,
+      ...this.commonSmsParams,
     };
-
-    const uri = `http://smsc.ru/sys/status.php`;
-    const res = await this._send(uri, extendedParams);
+    const rawResponse = await this._send(uri, extendedParams);
+    const res = {
+      messageId: `${rawResponse.id}-${phone}`,
+      rawResponse,
+    };
     return res;
   }
 
   // get cost of message without sending
-  async getCost(params: GetCostParamsT): Promise<GetCostResponseT> {
+  async getCost(phone: string, message: string): Promise<GetCostResponseT> {
     const uri = `http://smsc.ru/sys/send.php`;
     const extendedParams = {
       cost: 1,
-      ...params,
+      phones: phone,
+      mes: message,
+      ...this.commonSmsParams,
     };
-    const rawData = await this._send(uri, extendedParams);
+    const rawResponse = await this._send(uri, extendedParams);
     const res = {
-      cost: rawData.cost,
-      response: rawData,
+      cost: rawResponse.cost,
+      rawResponse,
     };
     return res;
   }
 
   // get status of message (messageId format: id-phoneNumber)
-  async getStatus(messageId: string, params: GetStatusParamsT): Promise<GetStatusResponseT> {
+  async getStatus(messageId: string): Promise<GetStatusResponseT> {
     const extendedParams = {
       id: messageId.split('-')[0],
       phone: messageId.split('-')[1],
-      ...params,
+      all: 2,
+      ...this.commonSmsParams,
     };
 
     const uri = `http://smsc.ru/sys/status.php`;
-    const rawData = await this._send(uri, extendedParams);
+    const rawResponse = await this._send(uri, extendedParams);
     const res = {
-      status: rawData.status,
-      response: rawData,
+      status: this._prepareStatus(rawResponse.status),
+      rawResponse,
     };
     return res;
-
-    // const states = {
-    //   '-3': 'Message not found',
-    //   '-1': 'Pending',
-    //   '0': 'Given to operator',
-    //   '1': 'Delivered',
-    //   '2': 'Read',
-    //   '3': 'Expired',
-    //   '20': 'Can not deliver',
-    //   '22': 'Wrong number',
-    //   '23': 'Prohibited',
-    //   '24': 'Insufficient funds',
-    //   '25': 'Inaccessible number',
-    // };
-    // Object.entries(states).forEach(entry => {
-    //   if (entry[0] === rawData.status.toString()) {
-    //     status = entry[1];
-    //   }
-    // });
   }
 
   // get current balance
-  async getBalance(params: GetBalanceParamsT): Promise<{ balance: number }> {
+  async getBalance(): Promise<GetBalanceResponseT> {
     const uri = `http://smsc.ru/sys/balance.php`;
-    const res = await this._send(uri, params);
+    const params = {
+      cur: 1,
+      ...this.commonSmsParams,
+    };
+    const rawResponse = await this._send(uri, params);
+    const res = {
+      balance: rawResponse.balance,
+      rawResponse,
+    };
     return res;
   }
 }

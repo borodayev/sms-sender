@@ -3,6 +3,7 @@
 
 import mongoose from 'mongoose';
 import type { MongooseConnection } from 'mongoose';
+import { MONGO_CONNECTION_PROD, MONGO_CONNECTION_DEV } from '../config';
 
 mongoose.Promise = global.Promise;
 
@@ -26,11 +27,7 @@ export default class DB {
   static openDB(name: DBNames = 'data'): Promise<MongooseConnection> {
     return new Promise((resolve, reject) => {
       const uri =
-        process.env.MONGODB_GOV_STAT_BIN_URI ||
-        'mongodb://frankast:v1v2v3b4@ds255588.mlab.com:55588/smsc';
-      // (process.env.NODE_ENV === 'frankast'
-      //   ? 'mongodb://frankast:v1v2v3b4@ds251827.mlab.com:51827/stat-gov-bin'
-      //   : 'mongodb://gov_stat_bin:pass@ds263137.mlab.com:63137/gov_stat_bin');
+        process.env.NODE_ENV === 'development' ? MONGO_CONNECTION_DEV : MONGO_CONNECTION_PROD;
       const opts = {};
 
       opts.promiseLibrary = global.Promise;
