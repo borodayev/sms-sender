@@ -30,7 +30,7 @@ export default class Smsc implements TransporterI {
   }
 
   // make request to SMSC API
-  async _send(uri: string, params: Object): Promise<Object> {
+  async _send(cmd: 'send' | 'status' | 'balance', params: Object): Promise<Object> {
     const { login, password } = this.credentials || {};
     const extendedParams = {
       login,
@@ -39,29 +39,50 @@ export default class Smsc implements TransporterI {
       fmt: 3, // return response in JSON format
     };
     const paramsUrl = new URLSearchParams(extendedParams);
-    const url = `${uri}?${paramsUrl.toString()}`;
+    const url = `http://smsc.ru/sys/${cmd}.php?${paramsUrl.toString()}`;
     const res = await fetch(url);
     return res.json();
   }
 
+  // get more detailed description on https://smsc.kz/api/http/status_messages/statuses/#menu
   // eslint-disable-next-line class-methods-use-this
   _prepareStatus(status: number): SmsStatusT {
-    if (status === 1 || status === 2) {
-      return 'ok';
-    } else if (status === -1 || status === 0) {
-      return 'pending';
+    switch (status) {
+      case -3:
+        return 'error'; // -3 - Message not found
+      case -1:
+        return 'pending'; // -1 - Waiting for sending
+      case 0:
+        return 'pending'; // 0 - Given to operator
+      case 1:
+        return 'ok'; // 1 - Delivered
+      case 2:
+        return 'ok'; // 2 - Read
+      case 3:
+        return 'error'; // 3 - Overdue message
+      case 20:
+        return 'error'; // 20 - Can not deliver
+      case 22:
+        return 'error'; // 22 - Wrong number
+      case 23:
+        return 'error'; // 23 - Prohibited
+      case 24:
+        return 'error'; // 24 - Insufficient funds
+      case 25:
+        return 'error'; // 24 - Inaccessible number
+      default:
+        return 'error';
     }
-    return 'error';
   }
+
   // send message
   async sendSms(phone: string, message: string): Promise<SendSmsResponseT> {
-    const uri = `http://smsc.ru/sys/send.php`;
-    const extendedParams = {
+    const params = {
       phones: phone,
       mes: message,
       ...this.commonSmsParams,
     };
-    const rawResponse = await this._send(uri, extendedParams);
+    const rawResponse = await this._send('send', params);
     const res = {
       messageId: `${rawResponse.id}-${phone}`,
       rawResponse,
@@ -71,14 +92,14 @@ export default class Smsc implements TransporterI {
 
   // get cost of message without sending
   async getCost(phone: string, message: string): Promise<GetCostResponseT> {
-    const uri = `http://smsc.ru/sys/send.php`;
-    const extendedParams = {
+    const params = {
       cost: 1,
       phones: phone,
       mes: message,
       ...this.commonSmsParams,
     };
-    const rawResponse = await this._send(uri, extendedParams);
+
+    const rawResponse = await this._send('send', params);
     const res = {
       cost: rawResponse.cost,
       rawResponse,
@@ -88,15 +109,14 @@ export default class Smsc implements TransporterI {
 
   // get status of message (messageId format: id-phoneNumber)
   async getStatus(messageId: string): Promise<GetStatusResponseT> {
-    const extendedParams = {
+    const params = {
       id: messageId.split('-')[0],
       phone: messageId.split('-')[1],
       all: 2,
       ...this.commonSmsParams,
     };
 
-    const uri = `http://smsc.ru/sys/status.php`;
-    const rawResponse = await this._send(uri, extendedParams);
+    const rawResponse = await this._send('status', params);
     const res = {
       status: this._prepareStatus(rawResponse.status),
       rawResponse,
@@ -106,12 +126,12 @@ export default class Smsc implements TransporterI {
 
   // get current balance
   async getBalance(): Promise<GetBalanceResponseT> {
-    const uri = `http://smsc.ru/sys/balance.php`;
     const params = {
       cur: 1,
       ...this.commonSmsParams,
     };
-    const rawResponse = await this._send(uri, params);
+
+    const rawResponse = await this._send('balance', params);
     const res = {
       balance: rawResponse.balance,
       rawResponse,
