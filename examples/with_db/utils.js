@@ -1,7 +1,6 @@
 // @flow
 /* eslint-disable no-console */
 
-import { Sms } from './schema/Sms';
 import Smsc from '../../src/transporters/Smsc';
 import { SMSC_LOGIN, SMSC_PASSWORD, SMSC_LOGIN_DEV, SMSC_PASSWORD_DEV } from './config';
 
@@ -12,9 +11,9 @@ const transporters = {
   }),
 };
 
-export type TransporterNames = $Keys<typeof transporters>;
+export type TransporterNamesT = $Keys<typeof transporters>;
 
-export function getTransport(name?: TransporterNames = 'smsc') {
+export function getTransport(name?: TransporterNamesT = 'smsc') {
   if (!transporters.hasOwnProperty(name)) {
     console.error(`Transport '${name}' is not defined.`);
   }
@@ -29,27 +28,4 @@ export function getTransport(name?: TransporterNames = 'smsc') {
   }
 
   return transporter;
-}
-
-export async function writeToDB(
-  response: any,
-  message: string,
-  phone: string,
-  transportName: string
-): Promise<any> {
-  const { messageId, rawResponse } = response;
-  const { balance, cost, error, error_code: errorCode } = rawResponse || {};
-
-  if (error) throw new Error(`Cannot send sms: ${error}, error_code: ${errorCode}`);
-
-  const fromDB = await Sms.upsert({
-    messageId,
-    message,
-    phone,
-    balance,
-    cost,
-    transporter: transportName,
-    rawData: rawResponse,
-  });
-  return fromDB;
 }

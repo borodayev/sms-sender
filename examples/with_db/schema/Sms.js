@@ -2,6 +2,8 @@
 
 import mongoose from 'mongoose';
 import DB from './db';
+import { getTransport, type TransporterNamesT } from '../utils';
+import type { SmsStatusT } from '../../../src/definitions';
 
 export const SmsSchema = new mongoose.Schema(
   {
@@ -26,11 +28,12 @@ export const SmsSchema = new mongoose.Schema(
     },
 
     status: {
-      type: Number, // TODO ENUM
+      type: String,
+      enum: ['ok', 'pending', 'error'],
       description: 'Status of message',
     },
 
-    rawData: {
+    rawResponse: {
       type: mongoose.Schema.Types.Mixed,
       descriprion: 'Raw response from api',
     },
@@ -47,15 +50,47 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
   messageId: string;
   message: string;
   phone: string;
-  status: number;
-  rawData: mixed;
+  status: 'ok' | 'pending' | 'error';
+  rawResponse: mixed;
 
-  static async upsert(data: $Shape<SmsDoc>): Promise<SmsDoc> {
-    return (this.findOneAndUpdate(
-      { messageId: data.messageId },
-      { ...data },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
-    ).exec(): any);
+  static async send(
+    phone: string,
+    message: string,
+    transporter?: TransporterNamesT = 'smsc'
+  ): Promise<SmsDoc> {
+    const transport = getTransport(transporter);
+    const sendRes = await transport.sendSms(phone, message);
+    const { messageId, rawResponse } = sendRes || {};
+
+    const statusRes = await transport.getStatus(messageId);
+    const { status } = statusRes || {};
+
+    const data = {
+      messageId,
+      rawResponse,
+      phone,
+      message,
+      status,
+    };
+
+    const doc = new this(data);
+    return doc.save();
+  }
+
+  async requestStatus(): Promise<SmsStatusT> {
+    const { messageId, status, transporter } = this || {};
+    // $FlowFixMe
+    const transport = getTransport(transporter);
+
+    const newStatus = await transport.getStatus(messageId);
+    if (newStatus !== status) {
+      await Sms.findOneAndUpdate(
+        { messageId },
+        { newStatus },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+      ).exec();
+    }
+    return status;
   }
 }
 
