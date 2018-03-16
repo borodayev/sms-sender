@@ -1,7 +1,27 @@
 {
-  "name": "smsc-js",
-  "version": "1.0.0",
+  "name": "sms-sender",
   "main": "index.js",
+  "version": "0.0.0-semantically-released",
+  "description": "This is a wrapper for SMSC API & AWS in Node.js",
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FrankAst/sms-sender.git"
+  },
+  "keywords": [
+    "sms",
+    "sms-sender",
+    "smsc",
+    "aws-sms",
+    "aws",
+    "smsc-sender"
+  ],
+  "bugs": {
+    "url": "https://github.com/FrankAst/sms-sender/issues"
+  },
+  "homepage": "https://github.com/FrankAst/sms-sender",
   "license": "MIT",
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
@@ -16,6 +36,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.17.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-prettier": "^2.6.0",
@@ -28,7 +49,13 @@
     "mongodb-memory-server": "^1.6.5",
     "nodemon": "^1.15.1",
     "prettier": "^1.10.2",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "semantic-release": "^15.0.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "jest": {
     "roots": [
@@ -36,10 +63,15 @@
     ]
   },
   "scripts": {
-    "ex-with-db": "./node_modules/.bin/babel-node ./examples/with_db/index.js",
+    "demo-db": "./node_modules/.bin/babel-node ./examples/with_db/index.js",
+    "build": "npm run build-cjs && npm run build-flow",
+    "build-cjs": "rimraf lib && babel src --ignore __tests__,__mocks__,__fixtures__ -d lib",
+    "build-flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
     "watch": "jest --watch",
+    "coverage": "jest --coverage --maxWorkers 2",
     "lint": "eslint --ext .js ./src",
     "flow": "./node_modules/.bin/flow",
-    "test": "jest && npm run lint && npm run flow"
+    "test": "npm run coverage && npm run lint && npm run flow",
+    "semantic-release": "semantic-release"
   }
 }
