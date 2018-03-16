@@ -50,7 +50,7 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
   messageId: string;
   message: string;
   phone: string;
-  status: 'ok' | 'pending' | 'error';
+  status: SmsStatusT;
   rawResponse: mixed;
 
   static async send(
@@ -79,6 +79,7 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
 
   async requestStatus(): Promise<SmsStatusT> {
     const { messageId, status, transporter } = this || {};
+    // TODO fix this issue
     // $FlowFixMe
     const transport = getTransport(transporter);
 
