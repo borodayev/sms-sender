@@ -3,7 +3,6 @@
 
 import mongoose from 'mongoose';
 import type { MongooseConnection } from 'mongoose';
-import { MONGO_CONNECTION_PROD, MONGO_CONNECTION_DEV } from '../config';
 
 mongoose.Promise = global.Promise;
 
@@ -13,10 +12,12 @@ export default class DB {
   static mongoose = mongoose;
   static consoleErr = console.error;
   static consoleLog = console.log;
+  static _connectionStr: string;
 
   static data: MongooseConnection = mongoose.createConnection();
 
-  static init() {
+  static init(connectionStr?: string) {
+    if (connectionStr) this._connectionStr = connectionStr;
     return Promise.all([DB.openDB('data')]);
   }
 
@@ -27,7 +28,9 @@ export default class DB {
   static openDB(name: DBNames = 'data'): Promise<MongooseConnection> {
     return new Promise((resolve, reject) => {
       const uri =
-        process.env.NODE_ENV === 'development' ? MONGO_CONNECTION_DEV : MONGO_CONNECTION_PROD;
+        process.env.NODE_ENV === 'development'
+          ? process.env.MONGO_CONNECTION_DEV || this._connectionStr
+          : process.env.MONGO_CONNECTION_PROD || this._connectionStr;
       const opts = {};
 
       opts.promiseLibrary = global.Promise;
