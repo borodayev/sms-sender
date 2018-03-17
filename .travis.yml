@@ -22,5 +22,5 @@ after_success:
   - if [[ "$TRAVIS_JOB_NUMBER" == *.1 && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash <(curl -s https://codecov.io/bash); fi
   - if [[ "$TRAVIS_JOB_NUMBER" == *.1 && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then npm run semantic-release; fi
 branches:
-  except:
-    - /^v\d+\.\d+\.\d+$/
+  only:
+  - master

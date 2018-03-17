@@ -52,6 +52,9 @@
     "rimraf": "^2.6.2",
     "semantic-release": "^15.0.3"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
