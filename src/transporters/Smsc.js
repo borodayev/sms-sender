@@ -9,7 +9,7 @@ import type {
   GetStatusResponseT,
   GetBalanceResponseT,
   SmsStatusT,
-  TransporterI,
+  ProviderI,
 } from '../definitions';
 
 type CredentialsT = {|
@@ -17,7 +17,7 @@ type CredentialsT = {|
   password: string,
 |};
 
-export default class Smsc implements TransporterI {
+export default class Smsc implements ProviderI {
   credentials: CredentialsT;
   commonSmsParams = {
     tinyurl: 1,
@@ -137,5 +137,11 @@ export default class Smsc implements TransporterI {
       rawResponse,
     };
     return res;
+  }
+
+  // get current provider name
+  // eslint-disable-next-line class-methods-use-this
+  getProviderName(): string {
+    return 'smsc';
   }
 }

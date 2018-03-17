@@ -21,9 +21,10 @@ export type GetBalanceResponseT = {|
   rawResponse: mixed, // vanila response from transporter
 |};
 
-export interface TransporterI {
+export interface ProviderI {
   sendSms(phone: string, message: string): Promise<SendSmsResponseT>;
   getCost(phone: string, message: string): Promise<GetCostResponseT>;
   getStatus(messageId: string): Promise<GetStatusResponseT>;
   getBalance(): Promise<GetBalanceResponseT>;
+  getProviderName(): string;
 }
