@@ -76,5 +76,8 @@
     "flow": "./node_modules/.bin/flow",
     "test": "npm run coverage && npm run lint && npm run flow",
     "semantic-release": "semantic-release"
+  },
+  "optionalDependencies": {
+    "aws-sdk": "^2.211.0"
   }
 }
