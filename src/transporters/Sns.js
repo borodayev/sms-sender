@@ -25,12 +25,10 @@ export default class Sns /* implements ProviderI */ {
 
     // if credentials were put manually
     if (accessKeyId && secretAccessKey) {
-      AWS.config = { accessKeyId, secretAccessKey, region };
-      this.sns = new AWS.SNS();
+      this.sns = new AWS.SNS({ accessKeyId, secretAccessKey, region });
     } else {
       // if credentials were put in ~/.aws/credentials
-      AWS.config = { region };
-      this.sns = new AWS.SNS();
+      this.sns = new AWS.SNS({ region });
     }
   }
 
