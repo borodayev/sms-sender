@@ -1,14 +1,14 @@
 // @flow
 
-import fetchMock from 'fetch-mock';
+// import fetchMock from 'fetch-mock';
 import Sns from '../Sns';
 
 describe('Sns', () => {
   const sns = new Sns({ region: 'eu-west-1' });
 
-  beforeEach(() => {
-    fetchMock.reset();
-  });
+  // beforeEach(() => {
+  //   fetchMock.reset();
+  // });
 
   // send message
   it.only('sendSms', async () => {
@@ -17,7 +17,8 @@ describe('Sns', () => {
     //   response: { cnt: 1, id: 50 },
     // });
 
-    const res = await sns.sendSms('+77081949582', 'Hello from aws');
+    const res = await sns.sendSms('+77081949582', 'Hi');
+    console.dir(res);
     expect(res).toEqual();
   });
 

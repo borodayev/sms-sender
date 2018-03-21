@@ -22,21 +22,28 @@ export default class Sns /* implements ProviderI */ {
 
   constructor(params: SnsParamsT) {
     const { accessKeyId, secretAccessKey, region } = params || {};
+
+    // if credentials were put manually
     if (accessKeyId && secretAccessKey) {
-      this.sns = new AWS.SNS({ accessKeyId, secretAccessKey, region });
+      AWS.config = { accessKeyId, secretAccessKey, region };
+      this.sns = new AWS.SNS();
     } else {
-      this.sns = new AWS.SNS({ region });
+      // if credentials were put in ~/.aws/credentials
+      AWS.config = { region };
+      this.sns = new AWS.SNS();
     }
   }
 
+  // TODO: need to take messageid, and request object for checking status of message
   async sendSms(phone: string, message: string): Promise<SendSmsResponseT> {
     const params = {
       Message: message,
-      MessageStructure: 'string',
+      MessageStructure: 'String',
       PhoneNumber: phone,
     };
-    const rawResponse = await this.sns.publish(params);
-    return rawResponse;
+    const request = await this.sns.publish(params);
+    await request.send();
+    return request;
   }
   // async getCost(phone: string, message: string): Promise<GetCostResponseT> {}
   // async getStatus(messageId: string): Promise<GetStatusResponseT> {}
