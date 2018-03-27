@@ -15,6 +15,7 @@
     "sms-sender",
     "smsc",
     "aws-sms",
+    "aws-sns",
     "aws",
     "smsc-sender"
   ],
@@ -27,10 +28,13 @@
     "isomorphic-fetch": "^2.2.1",
     "mongoose": "^5.0.4"
   },
+  "optionalDependencies": {
+    "aws-sdk": "^2.211.0"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
-    "babel-jest": "22.1.0",
+    "babel-jest": "22.4.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.13.0",
@@ -44,8 +48,8 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-prettier": "^2.6.0",
     "fetch-mock": "^6.0.0",
-    "flow-bin": "^0.64.0",
-    "jest": "22.1.4",
+    "flow-bin": "^0.68.0",
+    "jest": "22.4.3",
     "mongodb-memory-server": "^1.6.5",
     "nodemon": "^1.15.1",
     "prettier": "^1.10.2",
@@ -67,6 +71,7 @@
   },
   "scripts": {
     "demo-db": "./node_modules/.bin/babel-node ./examples/with_db/index.js",
+    "demo-regexp": "./node_modules/.bin/babel-node ./examples/by_regexp/index.js",
     "build": "npm run build-cjs && npm run build-flow",
     "build-cjs": "rimraf lib && babel src --ignore __tests__,__mocks__,__fixtures__ -d lib",
     "build-flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
@@ -76,8 +81,5 @@
     "flow": "./node_modules/.bin/flow",
     "test": "npm run coverage && npm run lint && npm run flow",
     "semantic-release": "semantic-release"
-  },
-  "optionalDependencies": {
-    "aws-sdk": "^2.211.0"
   }
 }
