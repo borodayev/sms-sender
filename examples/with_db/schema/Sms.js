@@ -67,6 +67,7 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
   static async send(phone: string, message: string, providerName?: string): Promise<SmsDoc> {
     const { _providers, _providerDefault } = this || {};
     let provider;
+
     if (!providerName) {
       provider = _providers[_providerDefault];
       if (!provider)

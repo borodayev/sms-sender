@@ -6,7 +6,7 @@ export type SendSmsResponseT = {|
 |};
 
 export type GetCostResponseT = {|
-  cost: number,
+  cost: string,
   rawResponse: mixed, // vanila response from transporter
 |};
 
@@ -17,7 +17,7 @@ export type GetStatusResponseT = {|
 |};
 
 export type GetBalanceResponseT = {|
-  balance: number,
+  balance: string,
   rawResponse: mixed, // vanila response from transporter
 |};
 
