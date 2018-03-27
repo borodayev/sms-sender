@@ -7,8 +7,9 @@ import { Sms } from './schema/Sms';
 
 import DB from './schema/db';
 
-DB.init('mongodb://frankast:v1v2v3b4@ds255588.mlab.com:55588/smsc');
+DB.init('MONGO_CONNECTION_STRING');
 
+// don't forget to send you credentials
 const providers = {
   smsc: new Smsc({
     login: '',
