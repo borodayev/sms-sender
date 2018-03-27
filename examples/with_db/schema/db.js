@@ -12,10 +12,12 @@ export default class DB {
   static mongoose = mongoose;
   static consoleErr = console.error;
   static consoleLog = console.log;
+  static _connectionStr: string;
 
   static data: MongooseConnection = mongoose.createConnection();
 
-  static init() {
+  static init(connectionStr?: string) {
+    if (connectionStr) this._connectionStr = connectionStr;
     return Promise.all([DB.openDB('data')]);
   }
 
@@ -26,11 +28,9 @@ export default class DB {
   static openDB(name: DBNames = 'data'): Promise<MongooseConnection> {
     return new Promise((resolve, reject) => {
       const uri =
-        process.env.MONGODB_GOV_STAT_BIN_URI ||
-        'mongodb://frankast:v1v2v3b4@ds255588.mlab.com:55588/smsc';
-      // (process.env.NODE_ENV === 'frankast'
-      //   ? 'mongodb://frankast:v1v2v3b4@ds251827.mlab.com:51827/stat-gov-bin'
-      //   : 'mongodb://gov_stat_bin:pass@ds263137.mlab.com:63137/gov_stat_bin');
+        process.env.NODE_ENV === 'development'
+          ? process.env.MONGO_CONNECTION_DEV || this._connectionStr
+          : process.env.MONGO_CONNECTION_PROD || this._connectionStr;
       const opts = {};
 
       opts.promiseLibrary = global.Promise;
