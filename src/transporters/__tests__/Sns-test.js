@@ -1,6 +1,5 @@
 // @flow
 
-// import fetchMock from 'fetch-mock';
 import Sns from '../Sns';
 
 jest.mock('../Sns');

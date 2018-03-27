@@ -23,4 +23,4 @@ after_success:
   - if [[ "$TRAVIS_JOB_NUMBER" == *.1 && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then npm run semantic-release; fi
 branches:
   only:
-  - master
+  - prod
