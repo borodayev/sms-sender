@@ -4,7 +4,7 @@
 import Smsc from '../../src/transporters/Smsc';
 import Sns from '../../src/transporters/Sns';
 
-// don't forget to send you credentials
+// don't forget to put your credentials
 const providers = {
   smsc: new Smsc({
     login: '',
