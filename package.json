@@ -72,6 +72,7 @@
   "scripts": {
     "demo-db": "./node_modules/.bin/babel-node ./examples/with_db/index.js",
     "demo-regexp": "./node_modules/.bin/babel-node ./examples/by_regexp/index.js",
+    "demo-retry-another": "./node_modules/.bin/babel-node ./examples/retry_another/index.js",
     "build": "npm run build-cjs && npm run build-flow",
     "build-cjs": "rimraf lib && babel src --ignore __tests__,__mocks__,__fixtures__ -d lib",
     "build-flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
