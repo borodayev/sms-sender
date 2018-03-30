@@ -15,14 +15,14 @@ This is a wrapper for [AWS.SNS](https://aws.amazon.com/sns/) and [SMSC API](http
 
 
 ```bash
-yarn add sms-sender
+yarn add @frankast/sms-sender
 ```
 
 ## Example
 
 There are two providers `Smsc.js` (default) and `Sns.js`. If you want to use `Sns.js` do not forget to add `aws-sdk` optional dependency.
 
-Here is example for using this wrapper with RegExp:
+Here is an example for using this wrapper with RegExp:
 
 ```js
 // @flow

@@ -1,5 +1,5 @@
 {
-  "name": "sms-sender",
+  "name": "@frankast/sms-sender",
   "main": "index.js",
   "version": "0.0.0-semantically-released",
   "description": "This is a wrapper for SMSC API & AWS in Node.js",
