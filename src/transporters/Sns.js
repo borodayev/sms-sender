@@ -1,6 +1,5 @@
 // @flow
 
-// import { promisify } from 'util';
 import AWS from 'aws-sdk';
 
 import type {
