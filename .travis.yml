@@ -12,7 +12,6 @@ node_js:
 before_install:
   - yarn global add greenkeeper-lockfile@1
   - openssl aes-256-cbc -K $encrypted_07079be19108_key -iv $encrypted_07079be19108_iv -in git_deploy_key.enc -out git_deploy_key -d
-  - chmod 600 /tmp/git_deploy_key
   - echo 'echo ${SSH_PASSPHRASE}' > /tmp/askpass && chmod +x /tmp/askpass
   - eval "$(ssh-agent -s)"
   - DISPLAY=":0.0" SSH_ASKPASS="/tmp/askpass" setsid ssh-add /tmp/git_deploy_key </dev/null
