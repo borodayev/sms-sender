@@ -62,44 +62,18 @@ export default class Sns implements ProviderI {
     return 'sns';
   }
 
-  // AWS.SDK DOES NOT PROVIDE THE WAYS TO IMPLEMENTS THESE METHODS
-
   // eslint-disable-next-line
-   async getCost(phone: string, message: string): Promise<GetCostResponseT> {
-    return new Promise(resolve => {
-      resolve({ cost: '0', rawResponse: { cnt: 1, cost: '0' } });
-    });
+  async getCost(phone: string, message: string): Promise<GetCostResponseT> {
+    throw new Error(`AWS.SNS does not support getting cost via 'aws-sdk'`);
   }
 
   // eslint-disable-next-line
   async getStatus(messageId: string): Promise<GetStatusResponseT> {
-    return new Promise(resolve => {
-      resolve({
-        rawResponse: {
-          cost: '0.00',
-          country: 'Казахстан',
-          last_date: '13.03.2018 15:50:50',
-          last_timestamp: 1520934650,
-          message: 'hello',
-          operator: 'Beeline',
-          phone: '77718637484',
-          region: '',
-          send_date: '13.03.2018 15:50:46',
-          send_timestamp: 1520934646,
-          sender_id: 'SMS-CENTRE',
-          status: 1,
-          status_name: 'Доставлено',
-          type: 0,
-        },
-        status: 'ok',
-      });
-    });
+    throw new Error(`AWS.SNS does not support getting status via 'aws-sdk'`);
   }
 
   // eslint-disable-next-line
   async getBalance(): Promise<GetBalanceResponseT> {
-    return new Promise(resolve => {
-      resolve({ balance: '84.75', rawResponse: { balance: '84.75', currency: 'KZT' } });
-    });
+    throw new Error(`AWS.SNS does not support getting balance via 'aws-sdk'`);
   }
 }
