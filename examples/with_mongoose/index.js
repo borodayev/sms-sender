@@ -7,10 +7,10 @@ import { Sms } from './schema/Sms';
 
 import DB from './schema/db';
 
-// put here your mongo connection
+// don't forget to put your mongo connection string here
 DB.init('MONGO_CONNECTION_STRING');
 
-// don't forget to put your credentials
+// don't forget to put your credentials here
 const providers = {
   smsc: new Smsc({
     login: '',

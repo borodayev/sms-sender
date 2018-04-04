@@ -57,10 +57,13 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
   rawResponse: mixed;
 
   static _providers: ProvidersT;
-  static _providerDefault: string = 'smsc';
+  static _providerDefault: string = '';
 
-  static setProviders(providers: ProvidersT, providerDefault: string) {
+  static setProviders(providers: ProvidersT) {
     this._providers = providers;
+  }
+
+  static setDefaultProvider(providerDefault: string) {
     this._providerDefault = providerDefault;
   }
 
@@ -69,12 +72,13 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
     let provider;
 
     if (!providerName) {
-      provider = _providers[_providerDefault];
-      if (!provider)
-        throw new Error(
-          `Cannot find provider: ${_providerDefault} in providers!\n
-           Please specify correct default provider.`
-        );
+      if (_providerDefault) {
+        provider = _providers[_providerDefault];
+      } else {
+        provider = _providers[0];
+      }
+
+      if (!provider) throw new Error(`You shold specify at least one: provider or providerDefault`);
     } else {
       provider = _providers[providerName];
       if (!provider) throw new Error(`Cannot find provider: ${providerName} in providers!`);
