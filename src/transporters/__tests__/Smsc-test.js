@@ -4,8 +4,8 @@ import fetchMock from 'fetch-mock';
 import Smsc from '../Smsc';
 
 describe('Smsc', () => {
-  const login = 'test_dev_kz';
-  const password = 'test_dev_kz123';
+  const login = 'SMSC_LOGIN';
+  const password = 'SMSC_PASSWORD';
   const smsc = new Smsc({ login, password });
 
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe('Smsc', () => {
   // send message
   it('sendSms', async () => {
     fetchMock.mock({
-      matcher: `http://smsc.ru/sys/send.php?login=test_dev_kz&psw=test_dev_kz123&phones=77718637484&mes=%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BB%D0%B8%D1%82&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
+      matcher: `http://smsc.ru/sys/send.php?login=SMSC_LOGIN&psw=SMSC_PASSWORD&phones=77718637484&mes=%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BB%D0%B8%D1%82&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
       response: { cnt: 1, id: 50 },
     });
 
@@ -26,7 +26,7 @@ describe('Smsc', () => {
   // get cost of message sending
   it('getCost', async () => {
     fetchMock.mock({
-      matcher: `http://smsc.ru/sys/send.php?login=test_dev_kz&psw=test_dev_kz123&cost=1&phones=77718637484&mes=hello&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
+      matcher: `http://smsc.ru/sys/send.php?login=SMSC_LOGIN&psw=SMSC_PASSWORD&cost=1&phones=77718637484&mes=hello&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
       response: { cnt: 1, cost: '0' },
     });
 
@@ -37,7 +37,7 @@ describe('Smsc', () => {
   // get status of message with full information
   it('getStatus', async () => {
     fetchMock.mock({
-      matcher: `http://smsc.ru/sys/status.php?login=test_dev_kz&psw=test_dev_kz123&id=40&phone=77718637484&all=2&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
+      matcher: `http://smsc.ru/sys/status.php?login=SMSC_LOGIN&psw=SMSC_PASSWORD&id=40&phone=77718637484&all=2&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
       response: {
         cost: '0.00',
         country: 'Казахстан',
@@ -82,7 +82,7 @@ describe('Smsc', () => {
   // get current balance
   it('getBalance', async () => {
     fetchMock.mock({
-      matcher: `http://smsc.ru/sys/balance.php?login=test_dev_kz&psw=test_dev_kz123&cur=1&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
+      matcher: `http://smsc.ru/sys/balance.php?login=SMSC_LOGIN&psw=SMSC_PASSWORD&cur=1&tinyurl=1&charset=utf-8&translit=1&fmt=3`,
       response: { balance: '84.75', currency: 'KZT' },
     });
 
