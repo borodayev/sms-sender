@@ -1,5 +1,4 @@
 // @flow
-
 /* eslint-disable no-console */
 
 import Smsc from '../../src/transporters/Smsc';
@@ -19,31 +18,23 @@ const providers = {
   }),
 };
 
-async function retryAnother(phone: string, message: string, providerName: string): Promise<any> {
-  let provider = providers.smsc;
-  Object.keys(providers).forEach(name => {
-    if (name !== providerName) {
-      provider = providers[name];
-    }
-  });
-
-  const res = await provider.sendSms(phone, message);
-  return res;
-}
-
 async function send(phone: string, message: string, providerName: string): Promise<any> {
-  const provider = providers[providerName];
-
-  const res = await provider.sendSms('77718637484', 'test');
-  const { messageId } = res;
-  const status = await provider.getStatus(messageId);
-  if (status === 'ok') {
+  try {
+    const provider = providers[providerName];
+    const res = await provider.sendSms('77718637484', 'test');
+    return res;
+  } catch (e) {
+    let provider;
+    Object.keys(providers).forEach(key => {
+      if (providerName !== key) {
+        provider = providers[key];
+      }
+    });
+    const res = await provider.sendSms('77718637484', 'test');
     return res;
   }
-  const res2 = await retryAnother(phone, message, providerName);
-  return res2;
 }
 
-send('77718637484', 'with_db', 'smsc').then(res => {
+send('77718637484', 'with_mongoose', 'smsc').then(res => {
   console.log(res);
 });
