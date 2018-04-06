@@ -24,7 +24,6 @@ There are two providers `Smsc.js` (default) and `Sns.js`. If you want to use `Sn
 
 
 #### Sending SMS
-
 To send an SMS you have to create an instance of provider and call `sendSms()` method:
 
 ```js
@@ -72,7 +71,6 @@ const response = await smsc.getStatus('40-77718637484'); // takes messageId (id-
 
 P.S. You can get status codes [here](https://github.com/FrankAst/sms-sender/blob/3946a34f0d68369914e1ac6c180cc2a5948b718d/src/transporters/Smsc.js#L49) or in [SMSC docs](https://smsc.kz/api/http/status_messages/statuses/#menu).
 
-
 #### Get cost of SMS
 To get a cost of SMS call `getCost()` method:
 
@@ -94,7 +92,6 @@ To get the current balance on your account call `getBalance()` method:
 ```
 
 ## Examples
-
 Here is an example of usage with RegExp:
 
 ```js
