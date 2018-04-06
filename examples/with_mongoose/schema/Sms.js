@@ -75,6 +75,7 @@ export class SmsDoc /* :: extends Mongoose$Document */ {
       if (_providerDefault) {
         provider = _providers[_providerDefault];
       } else {
+        // $FlowFixMe
         provider = _providers[0];
       }
 

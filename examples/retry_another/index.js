@@ -19,17 +19,18 @@ const providers = {
 };
 
 async function send(phone: string, message: string, providerName: string): Promise<any> {
+  let provider;
   try {
-    const provider = providers[providerName];
+    provider = providers[providerName];
     const res = await provider.sendSms('77718637484', 'test');
     return res;
   } catch (e) {
-    let provider;
     Object.keys(providers).forEach(key => {
       if (providerName !== key) {
         provider = providers[key];
       }
     });
+    if (!provider) throw new Error(e);
     const res = await provider.sendSms('77718637484', 'test');
     return res;
   }
