@@ -3,6 +3,7 @@
 import Sns from '../Sns';
 
 const sns = new Sns({ region: 'eu-west-1' });
+
 // $FlowFixMe
 sns.sendSms = jest.fn().mockImplementation(() => {
   return {
