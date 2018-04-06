@@ -18,22 +18,18 @@ const providers = {
   }),
 };
 
-function getProvider(providerName: string, defaultName?: string = 'smsc'): any {
-  const regexp = RegExp(providerName, 'g');
+async function send(phone: string, message: string): Promise<Object> {
+  const regexp = RegExp('7708', 'g');
   let provider;
-  Object.keys(providers).forEach(name => {
-    if (regexp.test(name)) {
-      provider = providers[name];
-    } else {
-      provider = providers[defaultName];
-    }
-  });
-
-  return provider;
+  if (regexp.test(phone)) {
+    provider = providers.smsc;
+  } else {
+    provider = providers.sns;
+  }
+  const res = await provider.sendSms(phone, message);
+  return res;
 }
 
-const provider = getProvider('sm');
-
-provider.sendSms('77718637484', 'test').then(res => {
+send('+77081113344', 'hello world').then(res => {
   console.log(res);
 });

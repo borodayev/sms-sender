@@ -18,10 +18,12 @@ This is a wrapper for [AWS.SNS](https://aws.amazon.com/sns/) and [SMSC API](http
 yarn add @frankast/sms-sender
 ```
 
-## Examples
+## API
 
 There are two providers `Smsc.js` (default) and `Sns.js`. If you want to use `Sns.js` do not forget to add `aws-sdk` optional dependency.
 
+
+#### Sending SMS
 To send an SMS you have to create an instance of provider and call `sendSms()` method:
 
 ```js
@@ -39,6 +41,7 @@ const response = await smsc.sendSms('phone_number', 'message');
 // response = { messageId: 'id-phone_number', rawResponse: { cnt: 1, id: 50 }}
 ```
 
+#### Get delivery status of SMS
 To check the delivery status of SMS call `getStatus()` method:
 
 ```js
@@ -68,6 +71,7 @@ const response = await smsc.getStatus('40-77718637484'); // takes messageId (id-
 
 P.S. You can get status codes [here](https://github.com/FrankAst/sms-sender/blob/3946a34f0d68369914e1ac6c180cc2a5948b718d/src/transporters/Smsc.js#L49) or in [SMSC docs](https://smsc.kz/api/http/status_messages/statuses/#menu).
 
+#### Get cost of SMS
 To get a cost of SMS call `getCost()` method:
 
 ```js
@@ -77,6 +81,7 @@ const response = await smsc.getCost('phone_number','message');
 // response = { cost: '0', rawResponse: { cnt: 1, cost: '25' } };
 ```
 
+#### Get current balance
 To get the current balance on your account call `getBalance()` method:
 
 ```js
@@ -86,6 +91,7 @@ To get the current balance on your account call `getBalance()` method:
 // response = { balance: '84.75', currency: 'KZT' };
 ```
 
+## Examples
 Here is an example of usage with RegExp:
 
 ```js
@@ -100,7 +106,6 @@ const providers = {
     password: '',
   }),
 
-// put here or in ~/.aws/credentials
   sns: new Sns({
     region: '',
     accessKeyId: '',
@@ -108,23 +113,22 @@ const providers = {
   }),
 };
 
-function getProvider(providerName: string, defaultName?: string = 'smsc'): any {
-  const regexp = RegExp(providerName, 'g');
+async function send(phone: string, message: string): Promise<Object> {
+  const regexp = RegExp('7708', 'g');
   let provider;
-  Object.keys(providers).forEach(name => {
-    if (regexp.test(name)) {
-      provider = providers[name];
-    } else {
-      provider = providers[defaultName];
-    }
-  });
-
-  return provider;
+  if (regexp.test(phone)) {
+    provider = providers.smsc;
+  } else {
+    provider = providers.sns;
+  }
+  const res = await provider.sendSms(phone, message);
+  return res;
 }
 
-const provider = getProvider('sm');
+send('+77081113344', 'hello world').then(res => {
+  console.log(res);
+});
 
-provider.sendSms('77718637484', 'test').then(res => console.log(res));
 
 ```
 
