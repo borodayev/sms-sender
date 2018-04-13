@@ -112,12 +112,9 @@ export default class Mobizon implements ProviderI {
     return res;
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  // eslint-disable-next-line
   async getCost() {
-    return {
-      cost: '',
-      rawResponse: {},
-    };
+    throw new Error(`Mobizon does not support getting cost via API`);
   }
 
   // eslint-disable-next-line class-methods-use-this
