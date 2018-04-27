@@ -9,6 +9,7 @@ notifications:
 node_js:
   - "9"
   - "8"
+  - "10"
 before_install:
   - yarn global add greenkeeper-lockfile@1
   
