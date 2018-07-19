@@ -41,8 +41,8 @@ export default class Mobizon implements ProviderI {
     };
     const { data } = await this._send(params);
     const res = {
-      messageId: data.messageId,
-      rawResponse: data,
+      messageId: data ? data.messageId : '',
+      rawResponse: data || {},
     };
     return res;
   }
