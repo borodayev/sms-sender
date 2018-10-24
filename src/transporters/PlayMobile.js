@@ -2,13 +2,22 @@
 import 'isomorphic-fetch';
 import axios from 'axios';
 
-import type { SendSmsResponseT, GetStatusResponseT, SmsStatusT, ProviderI } from '../definitions';
+import type {
+  SendSmsResponseT,
+  GetStatusResponseT,
+  SmsStatusT,
+  ProviderI,
+  GetCostResponseT,
+  GetBalanceResponseT,
+} from '../definitions';
 
 type CredentialsT = {|
   url: string,
-  in: string,
+  login: string,
   password: string,
 |};
+
+type OptionsT = { mesId: number, phone: string, message: string };
 
 export default class PlayMobile implements ProviderI {
   credentials: CredentialsT;
@@ -95,8 +104,16 @@ export default class PlayMobile implements ProviderI {
   getProviderName(): string {
     return 'PlayMobile';
   }
+  // eslint-disable-next-line
+  async getBalance(): Promise<GetBalanceResponseT> {
+    throw new Error(`PlayMobile does not support getting balance`);
+  }
+  // eslint-disable-next-line
+  async getCost(phone: string, message: string): Promise<GetCostResponseT> {
+    throw new Error(`PlayMobile does not support getting cost`);
+  }
   // eslint-disable-next-line class-methods-use-this
-  createParams(options): Object {
+  createParams(options: OptionsT): Object {
     const { mesId, phone, message } = options || {};
     return {
       messages: [

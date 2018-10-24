@@ -1,7 +1,14 @@
 // @flow
 import 'isomorphic-fetch';
 import axios from 'axios';
-import type { SendSmsResponseT, GetStatusResponseT, SmsStatusT, ProviderI } from '../definitions';
+import type {
+  SendSmsResponseT,
+  GetStatusResponseT,
+  SmsStatusT,
+  ProviderI,
+  GetCostResponseT,
+  GetBalanceResponseT,
+} from '../definitions';
 
 type CredentialsT = {|
   email: string,
@@ -86,5 +93,13 @@ export default class PlayMobile implements ProviderI {
   // eslint-disable-next-line class-methods-use-this
   getProviderName(): string {
     return 'Aero';
+  }
+  // eslint-disable-next-line
+  async getBalance(): Promise<GetBalanceResponseT> {
+    throw new Error(`PlayMobile does not support getting balance`);
+  }
+  // eslint-disable-next-line
+  async getCost(phone: string, message: string): Promise<GetCostResponseT> {
+    throw new Error(`PlayMobile does not support getting cost`);
   }
 }
