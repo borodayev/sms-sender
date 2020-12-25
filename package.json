@@ -1,14 +1,13 @@
 {
-  "name": "@frankast/sms-sender",
-  "main": "lib/index.js",
+  "name": "@borodayev/sms-sender",
   "version": "0.0.0-semantically-released",
   "description": "This is a wrapper for AWS.SNS & SMSC API in Node.js",
-  "files": [
-    "lib"
-  ],
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": ["/lib"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/FrankAst/sms-sender.git"
+    "url": "https://github.com/borodayev/sms-sender.git"
   },
   "keywords": [
     "sms",
@@ -20,43 +19,38 @@
     "smsc-sender"
   ],
   "bugs": {
-    "url": "https://github.com/FrankAst/sms-sender/issues"
+    "url": "https://github.com/borodayev/sms-sender/issues"
   },
-  "homepage": "https://github.com/FrankAst/sms-sender",
+  "homepage": "https://github.com/borodayev/sms-sender",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
     "isomorphic-fetch": "^2.2.1",
-    "mongoose": "^5.0.4",
-    "babel-runtime": "^6.26.0"
+    "mongoose": "^5.0.4"
   },
   "optionalDependencies": {
     "aws-sdk": "^2.211.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.2.1",
-    "babel-jest": "22.4.4",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.1",
+    "@types/jest": "^26.0.19",
+    "@types/mongoose": "^5.10.3",
+    "@typescript-eslint/eslint-plugin": "^4.11.0",
+    "@typescript-eslint/parser": "^4.11.0",
     "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^5.0.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-config-prettier": "^2.6.0",
-    "eslint-plugin-flowtype": "^2.42.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-prettier": "^2.6.0",
+    "eslint": "^7.16.0",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.3",
+    "eslint-plugin-prettier": "^3.3.0",
     "fetch-mock": "^6.0.0",
-    "flow-bin": "^0.70.0",
     "jest": "22.4.3",
     "mongodb-memory-server": "^1.6.5",
-    "nodemon": "^1.15.1",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
-    "semantic-release": "^15.0.3"
+    "semantic-release": "^15.0.3",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.3"
   },
   "publishConfig": {
     "access": "public"
@@ -67,6 +61,10 @@
     }
   },
   "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
     "roots": [
       "<rootDir>/src"
     ]
@@ -75,14 +73,11 @@
     "demo-with-mongoose": "./node_modules/.bin/babel-node ./examples/with_mongoose/index.js",
     "demo-by-regexp": "./node_modules/.bin/babel-node ./examples/by_regexp/index.js",
     "demo-retry-another": "./node_modules/.bin/babel-node ./examples/retry_another/index.js",
-    "build": "npm run build-cjs && npm run build-flow",
-    "build-cjs": "rimraf lib && babel src --ignore __tests__,__mocks__,__fixtures__ -d lib",
-    "build-flow": "find ./src -name '*.js' -not -path '*/__*' | while read filepath; do cp $filepath `echo $filepath | sed 's/\\/src\\//\\/lib\\//g'`.flow; done",
+    "build": "yarn tsc",
     "watch": "jest --watch",
     "coverage": "jest --coverage --maxWorkers 2",
-    "lint": "eslint --ext .js ./src",
-    "flow": "./node_modules/.bin/flow",
-    "test": "npm run coverage && npm run lint && npm run flow",
+    "lint": "eslint --ext .ts ./src",
+    "test": "yarn coverage && yarn lint",
     "semantic-release": "semantic-release"
   }
 }

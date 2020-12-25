@@ -1,4 +1,3 @@
-// @flow
 
 export type SendSmsResponseT = {|
   messageId: string,
